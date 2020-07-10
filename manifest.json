@@ -1,0 +1,22 @@
+{
+	"manifest_version": 2,
+
+	"name": "Stock Info",
+	"version": "1.0.0",
+	"icons": {
+		"16": "favicon-16x16.png",
+		"32": "favicon-32x32.png",
+		"96": "favicon-96x96.png"
+	},
+
+	"background": {
+		"scripts": ["eventPage.js"],
+		"persistent": false
+	},
+
+	"permissions": [
+		"storage",
+		"notifications",
+		"contextMenus"
+	]
+}
