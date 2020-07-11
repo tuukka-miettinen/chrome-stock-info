@@ -1,3 +1,4 @@
+// Create contextmenu items
 var yahooMenuItem = {
     "id": "yahoo",
     "title": "Yahoo",
