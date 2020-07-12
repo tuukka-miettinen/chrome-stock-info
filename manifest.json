@@ -15,13 +15,16 @@
 			"matches": [
 				"<all_urls>"
 			],
-			"js": ["content.js"]
+			"js": ["bundle.js"]
         }
 	],
 	"background": {
 		"scripts": ["eventPage.js"],
 		"persistent": false
 	},
+	"web_accessible_resources": [
+		"symbols.json"
+	],
 
 	"permissions": [
 		"storage",
