@@ -1,3 +1,14 @@
+// Bind tab change
+chrome.runtime.onInstalled.addListener(function() {
+    chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+        if (changeInfo.status === 'complete') {
+            chrome.tabs.sendMessage(tabId, {
+                message: 'TabUpdated'
+            });
+        }
+    })
+});
+
 // Create contextmenu items
 var yahooMenuItem = {
     "id": "yahoo",
