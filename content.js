@@ -47,25 +47,29 @@ const generateTickerSymbols = () => {
                 const titleSpans = document.querySelectorAll("span[data-name='productType']");
                 titleSpans.forEach(title => {
                     if (title.textContent === "Osakkeet") {
-                        title.textContent = title.textContent + " - ";
+                        title.textContent += " - ";
+                        let symbols = "";
                         for (let i = x.length - 1; i >= 0; i--) {
                             if (i != 0) {   
-                                title.textContent += x[i] + ",";
+                                symbols += x[i] + ",";
                             } else {
-                                title.textContent += x[i];
+                                symbols += x[i];
                             };
                         };
+                        title.textContent += symbols;
+                        console.log(symbols);
                     }
                 })
             });
-    }, 400)
+    }, 1000)
 }
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.message === 'TabUpdated') {
         if (document.location.href == "https://trader.degiro.nl/trader/#/portfolio" ||
             document.location.href == "https://trader.degiro.nl/trader/#/portfolio/active") {
-            generateTickerSymbols();
+                console.log("Updating symbols");
+                generateTickerSymbols();
         }
     }
 })
