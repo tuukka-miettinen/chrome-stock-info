@@ -4,7 +4,7 @@ const symbolsUrl = chrome.runtime.getURL('symbols.json');
 // {"symbol":"GSAT","name":"GLOBALSTAR INC","date":"2020-07-10","isEnabled":true,"type":"N/A","iexId":"8562"}
 const options = {
     minMatchCharLength: 2,
-    threshold: 0.2, // 0.6
+    threshold: 0.5, // 0.6
     distance: 20,
     keys: [
         "name",
@@ -12,27 +12,47 @@ const options = {
     ]
 };
 
+let getFromStorage = keys => {
+    return new Promise(function(resolve, reject) {
+        chrome.storage.local.get(...keys, result => {
+            return resolve(result);
+        });
+    })
+};
+
 const getSymbols = nameList => {
-    // return fetch("https://api.iextrading.com/1.0/ref-data/symbols")
-    return fetch(symbolsUrl)
+    return fetch(symbolsUrl) // "https://api.iextrading.com/1.0/ref-data/symbols"
         .then(x => x.json())
         .then(x => {
-            const fuse = new Fuse(x, options);
-            let ret = [];
-            nameList.forEach(name => {
-                const results = fuse.search(name);
-                if (results.length > 0) {
-                    ret.push(results[0].item.symbol);
-                }
-            })
-            return ret;
+            return getFromStorage(['knownSymbols']).then(x => x.knownSymbols).then(knownSymbols => {
+                const fuse = new Fuse(x, options);
+                let ret = [];
+                nameList.forEach(name => {
+                    const nameHash = name.toLowerCase().replace(/[^\w\s!?]/g,'');
+                    if (knownSymbols[nameHash] !== undefined) {
+                        console.log("Symbol for " + name + " found in storage.")
+                        ret.push(knownSymbols[nameHash]);
+                    } else {
+                        console.log("Searching symbol for " + name + " with fuse.")
+                        const results = fuse.search(name);
+                        if (results.length > 0) {
+                            knownSymbols[nameHash] = results[0].item.symbol;
+                            ret.push(results[0].item.symbol);
+                        }
+                    }
+                })
+                chrome.storage.local.set({"knownSymbols": knownSymbols}, function() {
+                    // console.log("saving knownSymbols", knownSymbols);
+                });	
+                return ret;
+            });
         })
 };
 
 const generateTickerSymbols = () => {
     // Insert ticker symbols next to productName
     setTimeout(() => {
-        const spans = document.querySelectorAll("span[data-name='productName']");
+        const spans = document.querySelectorAll("div[data-name='portfolio'] span[data-name='productName']");
         const names = [];
         spans.forEach(x => {
             names.push(x.textContent);
@@ -57,18 +77,20 @@ const generateTickerSymbols = () => {
                             };
                         };
                         title.textContent += symbols;
-                        console.log(symbols);
                     }
                 })
             });
-    }, 1000)
+    }, 600)
 }
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.message === 'TabUpdated') {
         if (document.location.href == "https://trader.degiro.nl/trader/#/portfolio" ||
-            document.location.href == "https://trader.degiro.nl/trader/#/portfolio/active") {
-                console.log("Updating symbols");
+            document.location.href == "https://trader.degiro.nl/trader/#/portfolio/active" ||
+            document.location.href == "https://trader.degiro.nl/traders4/#/portfolio" ||
+            document.location.href == "https://trader.degiro.nl/traders4/#/portfolio/active"
+            ) {
+                console.log("Fetching symbols");
                 generateTickerSymbols();
         }
     }

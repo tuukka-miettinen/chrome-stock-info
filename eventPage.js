@@ -2,7 +2,6 @@
 chrome.runtime.onInstalled.addListener(function() {
     chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         if (changeInfo.status === 'complete') {
-            console.log("TabUpdated");
             chrome.tabs.sendMessage(tabId, {
                 message: 'TabUpdated'
             });
@@ -33,7 +32,6 @@ chrome.contextMenus.onClicked.addListener(function(data) {
         openInNewTab("https://finance.yahoo.com/quote/" + data.selectionText.trim())
     }
 });
-console.log(chrome.contextMenus);
 
 chrome.contextMenus.create(marketWatchMenuItem);
 chrome.contextMenus.onClicked.addListener(function(data) {

@@ -19,8 +19,7 @@
         }
 	],
 	"background": {
-		"scripts": ["eventPage.js"],
-		"persistent": false
+		"scripts": ["eventPage.js"]
 	},
 	"web_accessible_resources": [
 		"symbols.json"
