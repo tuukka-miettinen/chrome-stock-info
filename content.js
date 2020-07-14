@@ -88,7 +88,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         if (document.location.href == "https://trader.degiro.nl/trader/#/portfolio" ||
             document.location.href == "https://trader.degiro.nl/trader/#/portfolio/active" ||
             document.location.href == "https://trader.degiro.nl/traders4/#/portfolio" ||
-            document.location.href == "https://trader.degiro.nl/traders4/#/portfolio/active"
+            document.location.href == "https://trader.degiro.nl/traders4/#/portfolio/active" ||
+            document.location.href == "https://trader.degiro.nl/staging-beta-trader/#/portfolio" ||
+            document.location.href == "https://trader.degiro.nl/staging-beta-trader/#/portfolio/active"
             ) {
                 console.log("Fetching symbols");
                 generateTickerSymbols();
