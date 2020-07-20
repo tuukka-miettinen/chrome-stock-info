@@ -20,6 +20,10 @@ let getFromStorage = keys => {
     })
 };
 
+const ignoredNames = [
+    "USD"
+];
+
 const getSymbols = nameList => {
     return fetch(symbolsUrl) // "https://api.iextrading.com/1.0/ref-data/symbols"
         .then(x => x.json())
@@ -28,16 +32,21 @@ const getSymbols = nameList => {
                 const fuse = new Fuse(x, options);
                 let ret = [];
                 nameList.forEach(name => {
-                    const nameHash = name.toLowerCase().replace(/[^\w\s!?]/g,'');
-                    if (knownSymbols[nameHash] !== undefined) {
-                        console.log("Symbol for " + name + " found in storage.")
-                        ret.push(knownSymbols[nameHash]);
+                    if (ignoredNames.includes(name))
+                    {
+                        console.log("Skipping ignored name " + name);
                     } else {
-                        console.log("Searching symbol for " + name + " with fuse.")
-                        const results = fuse.search(name);
-                        if (results.length > 0) {
-                            knownSymbols[nameHash] = results[0].item.symbol;
-                            ret.push(results[0].item.symbol);
+                        const nameHash = name.toLowerCase().replace(/[^\w\s!?]/g,'');
+                        if (knownSymbols[nameHash] !== undefined) {
+                            console.log("Symbol for " + name + " found in storage.")
+                            ret.push(knownSymbols[nameHash]);
+                        } else {
+                            console.log("Searching symbol for " + name + " with fuse.")
+                            const results = fuse.search(name);
+                            if (results.length > 0) {
+                                knownSymbols[nameHash] = results[0].item.symbol;
+                                ret.push(results[0].item.symbol);
+                            }
                         }
                     }
                 })
@@ -61,7 +70,9 @@ const generateTickerSymbols = () => {
             .then(x => {
                 let i = 0;
                 spans.forEach(span => {
-                    span.textContent = "[" + x[i] + "] " + span.textContent;
+                    if (x[i] !== undefined) {
+                        span.textContent = "[" + x[i] + "] " + span.textContent;
+                    }
                     i += 1;
                 });
                 const titleSpans = document.querySelectorAll("span[data-name='productType']");
