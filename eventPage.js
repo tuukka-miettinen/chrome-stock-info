@@ -20,6 +20,11 @@ var marketWatchMenuItem = {
     "title": "MarketWatch",
     "contexts": ["selection"]
 };
+var marketWatchChartMenuItem = {
+    "id": "marketWatchChart",
+    "title": "📈 Chart",
+    "contexts": ["selection"]
+};
 
 function openInNewTab(url) {
     var win = window.open(url, '_blank');
@@ -37,5 +42,11 @@ chrome.contextMenus.create(marketWatchMenuItem);
 chrome.contextMenus.onClicked.addListener(function(data) {
     if (data.menuItemId == marketWatchMenuItem.id && data.selectionText) {
         openInNewTab("https://www.marketwatch.com/investing/stock/" + data.selectionText.trim())
+    }
+});
+chrome.contextMenus.create(marketWatchChartMenuItem);
+chrome.contextMenus.onClicked.addListener(function(data) {
+    if (data.menuItemId == marketWatchChartMenuItem.id && data.selectionText) {
+        openInNewTab("https://www.marketwatch.com/investing/stock/" + data.selectionText.trim() + "/charts")
     }
 });
