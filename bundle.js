@@ -30,6 +30,9 @@ const getSymbols = nameList => {
         .then(x => x.json())
         .then(x => {
             return getFromStorage(['knownSymbols']).then(x => x.knownSymbols).then(knownSymbols => {
+                if (knownSymbols === undefined) {
+                    knownSymbols = {};
+                }
                 const fuse = new Fuse(x, options);
                 let ret = [];
                 nameList.forEach(name => {
@@ -65,7 +68,7 @@ const generateTickerSymbols = () => {
         const spans = document.querySelectorAll("div[data-name='portfolio'] span[data-name='productName']");
         const names = [];
         spans.forEach(x => {
-            names.push(x.textContent);
+            names.push(x.textContent.replace("=",""));
         });
         getSymbols(names)
             .then(x => {
@@ -97,15 +100,9 @@ const generateTickerSymbols = () => {
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.message === 'TabUpdated') {
-        if (document.location.href == "https://trader.degiro.nl/trader/#/portfolio" ||
-            document.location.href == "https://trader.degiro.nl/trader/#/portfolio/active" ||
-            document.location.href == "https://trader.degiro.nl/traders4/#/portfolio" ||
-            document.location.href == "https://trader.degiro.nl/traders4/#/portfolio/active" ||
-            document.location.href == "https://trader.degiro.nl/staging-beta-trader/#/portfolio" ||
-            document.location.href == "https://trader.degiro.nl/staging-beta-trader/#/portfolio/active"
-            ) {
-                console.log("Fetching symbols");
-                generateTickerSymbols();
+        if (document.location.href.search(/.*degiro.*trader.*portfolio.*/) > 0) {
+            console.log("Fetching symbols");
+            generateTickerSymbols();
         }
     }
 })

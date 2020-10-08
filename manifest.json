@@ -1,8 +1,8 @@
 {
 	"manifest_version": 2,
 
-	"name": "Stock Info",
-	"description": "Provides context menu items to quickly check information on a stock based on it's ticker symbol.",
+	"name": "Degiro Ticker Lister",
+	"description": "Provides a list of all positions in Degiro, to allow for quick copying of ticker symbols.",
 	"version": "1.0.0",
 	"icons": {
 		"16": "favicon-16x16.png",
